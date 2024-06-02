@@ -1,5 +1,5 @@
 trigger: none
-pool: Elanthamilan
+pool: DevopsAgent
 steps:
   - task: TerraformInstaller@1
     inputs:
