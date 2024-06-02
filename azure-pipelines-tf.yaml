@@ -9,7 +9,7 @@ steps:
       provider: "azurerm"
       command: "init"
       workingDirectory: "$(System.DefaultWorkingDirectory)/core-infra-1"
-      backendServiceArm: "Pay-As-You-Go(66a13570-6644-4894-bb1a-2fbea6c65d07)"
+      backendServiceArm: "serviceprincipalname"
       backendAzureRmResourceGroupName: "tfstate"
       backendAzureRmStorageAccountName: "tfstateazureterraform"
       backendAzureRmContainerName: "tfstate"
@@ -20,7 +20,7 @@ steps:
       command: "plan"
       workingDirectory: "$(System.DefaultWorkingDirectory)/core-infra-1"
       commandOptions: "-var-file ../ENV/core-infra-1.tfvars"
-      environmentServiceNameAzureRM: "Pay-As-You-Go(66a13570-6644-4894-bb1a-2fbea6c65d07)"
+      environmentServiceNameAzureRM: "serviceprincipalname"
 
   - task: TerraformTaskV4@4
     inputs:
@@ -28,4 +28,4 @@ steps:
       command: "apply"
       workingDirectory: "$(System.DefaultWorkingDirectory)/core-infra-1"
       commandOptions: "-var-file ../ENV/core-infra-1.tfvars"
-      environmentServiceNameAzureRM: "Pay-As-You-Go(66a13570-6644-4894-bb1a-2fbea6c65d07)"
+      environmentServiceNameAzureRM: "serviceprincipalname"
