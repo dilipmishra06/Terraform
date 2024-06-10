@@ -20,7 +20,7 @@ steps:
     name: BreakLease
     continueOnError: true
     inputs:
-      azureSubscription: "Pay-As-You-Go(66a13570-6644-4894-bb1a-2fbea6c65d07)"
+      azureSubscription: "spname"
       scriptType: "pscore"
       scriptLocation: "inlineScript"
       powerShellIgnoreLASTEXITCODE: true
