@@ -1,0 +1,53 @@
+trigger: none
+pool: Elanthamilan
+steps:
+  - task: TerraformInstaller@1
+    inputs:
+      terraformVersion: "latest"
+  - task: TerraformTaskV4@4
+    inputs:
+      provider: "azurerm"
+      command: "init"
+      workingDirectory: "$(System.DefaultWorkingDirectory)/core-infra-1"
+      backendServiceArm: "spname"
+      backendAzureRmResourceGroupName: "tfstate"
+      backendAzureRmStorageAccountName: "tfstateazuretf"
+      backendAzureRmContainerName: "tfstate"
+      backendAzureRmKey: "terraform.tfstate"
+
+  - task: AzureCLI@2
+    displayName: "Break lease on terraform state"
+    name: BreakLease
+    continueOnError: true
+    inputs:
+      azureSubscription: "Pay-As-You-Go(66a13570-6644-4894-bb1a-2fbea6c65d07)"
+      scriptType: "pscore"
+      scriptLocation: "inlineScript"
+      powerShellIgnoreLASTEXITCODE: true
+      inlineScript: |
+        $leaseBreakResult = az storage blob lease break --container-name 'tfstate' --blob-name 'terraform.tfstate' --account-name 'tfstateazuretf' > $null
+        if ($LASTEXITCODE -eq 0) {
+        Write-Host "Lease Broken"
+        }
+        elseif ($LASTEXITCODE -eq 1) {
+        Write-Host "No lease present, continuing..."
+        }
+        else {
+        Write-Host "An error occurred while breaking the lease"
+        }
+
+  - task: TerraformTaskV4@4
+    inputs:
+      provider: "azurerm"
+      command: "plan"
+      workingDirectory: "$(System.DefaultWorkingDirectory)/core-infra-1"
+      commandOptions: "-var-file ../ENV/core-infra-1.tfvars"
+      environmentServiceNameAzureRM: "spname"
+
+  - task: TerraformTaskV4@4
+    inputs:
+      provider: "azurerm"
+      command: "apply"
+      workingDirectory: "$(System.DefaultWorkingDirectory)/core-infra-1"
+      commandOptions: "-var-file ../ENV/core-infra-1.tfvars"
+      environmentServiceNameAzureRM: "spname"
